@@ -34,7 +34,6 @@ local player = {x = 0, y = 300, chr = 1, t = 1, vx = 3, vy = 3}
 -- firing offset
 -- directed
 
-
 function emit_burst(x, y, t, num, v, vx, vy, start_radius)
 	vx = vx or 0
 	vy = vy or 0
@@ -48,6 +47,22 @@ function emit_burst(x, y, t, num, v, vx, vy, start_radius)
 			y = y + dy * start_radius,
 			vx = dx * v + vx,
 			vy = dy * v + vy,
+			t = t,
+			a = a
+		}
+	end
+end
+
+function emit_spray(x, y, t, num, v, a, delta)
+	for i = a - delta / 2, a + delta / 2, delta / num do
+		local a = math.rad(i)
+		local dx = math.cos(a)
+		local dy = math.sin(a)
+		bullets[#bullets + 1] = {
+			x = x,
+			y = y,
+			vx = dx * v,
+			vy = dy * v,
 			t = t,
 			a = a
 		}
@@ -90,7 +105,13 @@ function love.load()
 
 	characters[#characters + 1] = {x = 0, y = 0, t = 2}
 
-	slaves[#slaves + 1] = {chr = 2, d = 32, a = 45, va = 2, bullet = 1, fire_offset = 0, fire_rate = 10, fire_num = 60, fire_v = 15}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 2, fire = {t = "burst", bullet = 2, offset = 0, rate = 20, c = 10, num = 100, v = 3}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "stream", bullet = 3, offset = 0, rate = 10, c = 10, num = 15, v = 15, directed = true}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 2, fire = {t = "tristream", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "mirror", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 1, fire = {t = "buble", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15, r = 50}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 0, fire = {t = "sinwave", bullet = 3, offset = 0, rate = 0, c = 0, num = 1, v = 15, sin_t = 0, sin_w = 10, sin_a = 30, directed = true}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, fire = {t = "spray", bullet = 2, offset = 0, rate = 20, c = 10, num = 100, v = 3, angle = 90, directed = true}}
 end
 
 function love.update(dt)
@@ -126,15 +147,44 @@ function love.update(dt)
 		slave.y = characters[slave.chr].y + math.sin(a) * slave.d
 		slave.a = slave.a + slave.va
 
-		if slave.fire_rate then
-			if slave.c then
-				slave.c = slave.c - 1
-				if slave.c <= 0 then
-					emit_stream(slave.x, slave.y, slave.bullet, slave.fire_num, slave.fire_v, slave.a + slave.fire_offset)
-					slave.c = slave.fire_rate
+		if slave.fire then
+			if slave.fire.c then
+				slave.fire.c = slave.fire.c - 1
+				if slave.fire.c <= 0 then
+					local x = slave.x
+					local y = slave.y
+					local bullet = slave.fire.bullet
+					local num = slave.fire.num
+					local v = slave.fire.v
+					local a = slave.a + slave.fire.offset
+					if slave.fire.directed and player then
+						a = math.deg(math.atan2(player.y - slave.y, player.x - slave.x))
+					end
+
+					if slave.fire.t == "burst" then
+						emit_burst(x, y, bullet, num, v)
+					elseif slave.fire.t == "stream" then
+						emit_stream(x, y, bullet, num, v, a)
+					elseif slave.fire.t == "tristream" then
+						emit_stream(x, y, bullet, num, v, a + 20)
+						emit_stream(x, y, bullet, num, v, a - 20)
+						emit_stream(x, y, bullet, num, v, a)
+					elseif slave.fire.t == "mirror" then
+						emit_stream(x, y, bullet, num, v, a)
+						emit_stream(x, y, bullet, num, v, a - 180)
+					elseif slave.fire.t == "buble" then
+						emit_burst(x, y, bullet, num, 0, math.cos(math.rad(a)) * v, math.sin(math.rad(a)) * v, slave.fire.r)
+					elseif slave.fire.t == "sinwave" then
+						slave.fire.sin_t = slave.fire.sin_t or 0
+						emit_stream(x, y, bullet, num, v, a + math.sin(slave.fire.sin_t * math.rad(slave.fire.sin_w)) * slave.fire.sin_a)
+						slave.fire.sin_t = slave.fire.sin_t + 1
+					elseif slave.fire.t == "spray" then
+						emit_spray(x, y, bullet, num, v, a, slave.fire.angle)
+					end
+					slave.fire.c = slave.fire.rate
 				end
 			else
-				slave.c = slave.fire_rate
+				slave.fire.c = slave.fire.rate
 			end
 		end
 	end
