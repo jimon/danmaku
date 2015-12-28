@@ -90,8 +90,9 @@ function emit_stream(x, y, t, count, v, a)
 	end
 end
 
-function love.load()
+function love.load(args)
 	print("hello")
+	pprint(args)
 
 	img_bg = love.graphics.newImage("bg.jpg")
 	img_bullets_atlas = love.graphics.newImage("bullets.png")

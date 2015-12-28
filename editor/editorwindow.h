@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QStack>
 
 namespace Ui {
 class EditorWindow;
@@ -21,6 +22,7 @@ private slots:
 	void on_actionRedo_triggered();
 	void on_actionAdd_Slave_triggered();
 	void on_actionRemove_Slave_triggered();
+	void on_actionRun_triggered();
 	void on_listWidget_currentRowChanged(int currentRow);
 	void stuffChanged();
 
@@ -28,6 +30,7 @@ private:
 	Ui::EditorWindow * ui;
 
 	QString filename;
+	QString gameExe;
 	size_t slave_index = 0;
 	bool ignoreChanges = false;
 
@@ -63,6 +66,18 @@ private:
 
 	slave_t slaves[1024];
 
+	struct snapshot_t
+	{
+		int selection = -1;
+		size_t count = 0;
+		slave_t slaves[1024];
+	};
+
+	QStack<snapshot_t> snapshots;
+	QStack<snapshot_t> snapshots_redo;
+
 	void load();
 	void save();
+	void take_snapshot(snapshot_t & snapshot);
+	void apply_snapshot(const snapshot_t & snapshot);
 };

@@ -5,6 +5,12 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonDocument>
+#include <QDebug>
+#include <QProcess>
+
+// TODO undo-redo haven't quite worked
+// because stuffChanged is called on every change
+// but we need to do snapshots only when user ended editing
 
 // schema driven editor anyone ?
 
@@ -83,8 +89,9 @@ EditorWindow::EditorWindow(QWidget * parent)
 
 	// TODO
 
-	filename = "C:/work/danmaku/test.json";
-	load();
+	//filename = "C:/work/danmaku/test.json";
+	gameExe = "C:/work/danmaku/_edit.bat";
+	//load();
 }
 
 EditorWindow::~EditorWindow()
@@ -105,12 +112,28 @@ void EditorWindow::on_actionOpen_triggered()
 
 void EditorWindow::on_actionUndo_triggered()
 {
-	// TODO
+	if(snapshots.count())
+	{
+		snapshot_t current_snapshot;
+		take_snapshot(current_snapshot);
+		snapshots_redo.push(current_snapshot);
+
+		snapshot_t snapshot = snapshots.pop();
+		apply_snapshot(snapshot);
+	}
 }
 
 void EditorWindow::on_actionRedo_triggered()
 {
-	// TODO
+	if(snapshots_redo.count())
+	{
+		snapshot_t current_snapshot;
+		take_snapshot(current_snapshot);
+		snapshots.push(current_snapshot);
+
+		snapshot_t snapshot = snapshots_redo.pop();
+		apply_snapshot(snapshot);
+	}
 }
 
 void EditorWindow::on_actionAdd_Slave_triggered()
@@ -143,6 +166,12 @@ void EditorWindow::on_actionRemove_Slave_triggered()
 		save();
 		on_listWidget_currentRowChanged(ui->listWidget->currentRow());
 	}
+}
+
+void EditorWindow::on_actionRun_triggered()
+{
+	QProcess game;
+	game.startDetached(gameExe, QStringList() << filename);
 }
 
 void EditorWindow::on_listWidget_currentRowChanged(int currentRow)
@@ -211,6 +240,11 @@ void EditorWindow::stuffChanged()
 
 	if(!ignoreChanges)
 	{
+		//snapshot_t snapshot;
+		//take_snapshot(snapshot);
+		//snapshots.push(snapshot);
+		//snapshots_redo.clear();
+
 		#define _read_val(__slider, __value) \
 			slaves[row].__value = ui->__slider->value();
 
@@ -401,4 +435,28 @@ void EditorWindow::save()
 	QFile data(filename);
 	if(data.open(QFile::WriteOnly | QFile::Truncate))
 		data.write(QJsonDocument(QJsonArray::fromVariantList(output)).toJson());
+}
+
+void EditorWindow::take_snapshot(EditorWindow::snapshot_t & snapshot)
+{
+	memcpy(snapshot.slaves, slaves, sizeof(slave_t) * 1024);
+	snapshot.selection = ui->listWidget->currentRow();
+	snapshot.count = ui->listWidget->count();
+}
+
+void EditorWindow::apply_snapshot(const EditorWindow::snapshot_t & snapshot)
+{
+	memcpy(slaves, snapshot.slaves, sizeof(slave_t) * 1024);
+
+	ignoreChanges = true;
+	ui->listWidget->clear();
+	for(size_t i = 0; i < snapshot.count; ++i)
+	{
+		QListWidgetItem * item = new QListWidgetItem(slaves[i].name, ui->listWidget);
+		item->setFlags(item->flags() | Qt::ItemIsEditable);
+		ui->listWidget->addItem(item);
+	}
+	ignoreChanges = false;
+	ui->listWidget->setCurrentRow(snapshot.selection);
+	save();
 }
