@@ -1,0 +1,70 @@
+[
+    {
+        "angle": 0,
+        "distance": 0,
+        "end": 0,
+        "fire": {
+            "bullet": 3,
+            "count": 18,
+            "counter": 0,
+            "directed": false,
+            "offset": 0,
+            "rate": 5,
+            "type": "mirror",
+            "velocity": 45
+        },
+        "name": "slave_1",
+        "start": 0,
+        "velocity": 3
+    },
+    {
+        "angle": 0,
+        "distance": 5,
+        "end": 0,
+        "fire": {
+            "bullet": 2,
+            "count": 16,
+            "counter": 0,
+            "directed": false,
+            "offset": 0,
+            "rate": 0,
+            "type": "burst",
+            "velocity": 11
+        },
+        "name": "slave_2",
+        "start": 0,
+        "velocity": 6
+    },
+    {
+        "angle": 0,
+        "distance": 32,
+        "end": 0,
+        "mod": {
+            "amount": 2,
+            "bullet": 2,
+            "type": "turn"
+        },
+        "name": "slave_3",
+        "start": 0,
+        "velocity": 0
+    },
+    {
+        "angle": 0,
+        "distance": 32,
+        "end": 0,
+        "fire": {
+            "bullet": 1,
+            "count": 11,
+            "counter": 0,
+            "directed": true,
+            "offset": 0,
+            "radius": 75,
+            "rate": 42,
+            "type": "buble",
+            "velocity": 5
+        },
+        "name": "slave_4",
+        "start": 0,
+        "velocity": 0
+    }
+]

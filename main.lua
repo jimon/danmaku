@@ -139,7 +139,7 @@ function love.update(dt)
 			if slaves_json ~= slaves_json_new then
 				slaves = slaves_new
 				slaves_json = slaves_json_new
-				pprint(slaves)
+				bullets = {}
 			end
 		end
 	end
@@ -356,6 +356,6 @@ function love.keypressed(key)
 	if key == "space" then
 		--emit_burst(0, 0, 4, 150, 5)--, 10, 10, 150)
 		
-		pprint(bullets)
+		--pprint(bullets)
 	end
 end
