@@ -46,7 +46,7 @@ private:
 		int32_t		n_bullet = 1;
 		int32_t		n_omni_bullet = 1;
 		uint32_t	n_bullet_count = 0;
-		int32_t		n_bullet_velocity = 0;
+		float		n_bullet_velocity = 0;
 		uint32_t	n_fire_rate = 0;
 		uint32_t	n_fire_counter = 0;
 		float		n_offset_angle = 0.0f;
@@ -58,7 +58,7 @@ private:
 		bool		m_modifier = false;
 		char		m_type[32] = "friction";
 		uint32_t	m_bullet = 1;
-		int32_t		m_amount = 0;
+		float		m_amount = 0;
 	};
 
 	slave_t slaves[1024];

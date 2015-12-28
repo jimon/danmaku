@@ -84,7 +84,7 @@ EditorWindow::EditorWindow(QWidget * parent)
 	// TODO
 
 	filename = "C:/work/danmaku/test.json";
-	on_actionAdd_Slave_triggered();
+	load();
 }
 
 EditorWindow::~EditorWindow()
@@ -124,6 +124,7 @@ void EditorWindow::on_actionAdd_Slave_triggered()
 	item->setFlags(item->flags() | Qt::ItemIsEditable);
 	ui->listWidget->addItem(item);
 	int row = ui->listWidget->count() - 1;
+	slaves[row] = slave_t();
 	strcpy_s(slaves[row].name, sizeof(slave_t::name), name.toLatin1().data());
 	ignoreChanges = true;
 	ui->listWidget->setCurrentRow(row);
@@ -270,7 +271,78 @@ void EditorWindow::stuffChanged()
 
 void EditorWindow::load()
 {
-	// TODO
+	ui->listWidget->clear();
+
+	QFile data(filename);
+	if(data.open(QFile::ReadOnly))
+	{
+		QJsonDocument doc = QJsonDocument::fromJson(data.readAll());
+		QJsonArray arr = doc.array();
+
+		for(int i = 0; i < arr.count(); ++i)
+		{
+			slave_t slave;
+			QJsonObject obj = arr[i].toObject();
+
+			strcpy_s(slave.name, sizeof(slave_t::name), obj["name"].toString("unknown").toLatin1().data());
+
+			slave.start_time = (float)obj["start"].toDouble();
+			slave.end_time = (float)obj["end"].toDouble();
+			slave.distance = (float)obj["distance"].toDouble();
+			slave.start_angle = (float)obj["angle"].toDouble();
+			slave.angular_velocity = (float)obj["velocity"].toDouble();
+
+			if(obj.contains("mod"))
+			{
+				QJsonObject mod = obj["mod"].toObject();
+				slave.m_modifier = true;
+				strcpy_s(slave.m_type, sizeof(slave_t::m_type), mod["type"].toString("friction").toLatin1().data());
+				slave.m_bullet = (uint32_t)mod["bullet"].toInt(1);
+				slave.m_amount = (float)mod["amount"].toDouble();
+			}
+
+			if(obj.contains("fire"))
+			{
+				QJsonObject fire = obj["fire"].toObject();
+				slave.m_modifier = false;
+				strcpy_s(slave.n_type, sizeof(slave_t::n_type), fire["type"].toString("burst").toLatin1().data());
+				slave.n_directed = fire["directed"].toBool();
+				slave.n_bullet = (int32_t)fire["bullet"].toInt(1);
+				slave.n_bullet_count = (uint32_t)fire["count"].toInt();
+				slave.n_bullet_velocity = (float)fire["velocity"].toDouble();
+				slave.n_fire_rate = (uint32_t)fire["rate"].toInt();
+				slave.n_fire_counter = (uint32_t)fire["counter"].toInt();
+				slave.n_offset_angle = (float)fire["offset"].toDouble();
+				if(!strcmp(slave.n_type, "buble"))
+					slave.n_buble_radius = (float)fire["radius"].toDouble();
+				if(!strcmp(slave.n_type, "sinwave"))
+				{
+					slave.n_sin_a = (float)fire["sin_a"].toDouble();
+					slave.n_sin_w = (float)fire["sin_w"].toDouble();
+					slave.n_sin_c = (float)fire["sin_c"].toDouble();
+				}
+				if(!strcmp(slave.n_type, "spray"))
+					slave.n_spray_angle = (float)fire["angle"].toDouble();
+				if(fire["omni"].toInt() > 0)
+				{
+					slave.n_omni = true;
+					slave.n_omni_bullet = (uint32_t)fire["omni"].toInt();
+					slave.n_omni_destroy = fire["destroy"].toBool();
+				}
+			}
+
+			slaves[i] = slave;
+			ignoreChanges = true;
+
+			QListWidgetItem * item = new QListWidgetItem(slave.name, ui->listWidget);
+			item->setFlags(item->flags() | Qt::ItemIsEditable);
+			ui->listWidget->addItem(item);
+
+			ignoreChanges = false;
+		}
+
+		slave_index = arr.count();
+	}
 }
 
 void EditorWindow::save()
