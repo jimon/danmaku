@@ -47,7 +47,8 @@ function emit_burst(x, y, t, num, v, vx, vy, start_radius)
 			vx = dx * v + vx,
 			vy = dy * v + vy,
 			t = t,
-			a = a
+			a = a,
+			life = 500
 		}
 	end
 end
@@ -108,19 +109,25 @@ function love.load()
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "stream", bullet = 3, offset = 0, rate = 10, c = 10, num = 15, v = 15, directed = true}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "stream", bullet = 3, offset = 0, rate = 10, c = 10, num = 15, v = 15}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 2, fire = {t = "tristream", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15}}
-	slaves[#slaves + 1] = {chr = #characters, d = 0, a = 0, va = 0, fire = {t = "mirror", bullet = 2, offset = 0, rate = 40, c = 10, num = 15, v = 15}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 0, a = 0, va = 0, fire = {t = "mirror", bullet = 2, offset = 0, rate = 40, c = 10, num = 15, v = 15}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 1, fire = {t = "buble", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15, r = 50}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 0, fire = {t = "sinwave", bullet = 3, offset = 0, rate = 0, c = 0, num = 1, v = 15, sin_t = 0, sin_w = 10, sin_a = 30, directed = true}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, fire = {t = "spray", bullet = 3, offset = 0, rate = 20, c = 10, num = 100, v = 3, angle = 90, directed = true}}
 
 	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, mod = {t = "friction", bullet = 3, v = 0.3}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, mod = {t = "turn", bullet = 2, v = 1}}
-	slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, mod = {t = "gravity", bullet = 2, v = 0.1}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, mod = {t = "gravity", bullet = 2, v = 0.1}}
+
+	slaves[#slaves + 1] = {chr = #characters, d = 64, a = 180, va = 3, fire = {t = "stream", bullet = 3, offset = 0, rate = 10, c = 10, num = 1, v = 10}}
+	slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, mod = {t = "friction", bullet = 3, v = 0.3}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 1, fire = {t = "burst", omni = 3, destroy = true, bullet = 1, offset = 0, rate = 120, c = 60, num = 100, v = 5}}
+	slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, fire = {t = "stream", omni = 3, destroy = true, bullet = 1, offset = 0, rate = 240, c = 60, num = 100, v = 50, directed = true}}
 end
 
 function love.update(dt)
-	scrn_w = love.graphics.getWidth()
-	scrn_h = love.graphics.getHeight()
+	local scrn_w = love.graphics.getWidth()
+	local scrn_h = love.graphics.getHeight()
+	local delete_later = {} -- bullets
 
 	-- update player input
 	if player then
@@ -155,35 +162,50 @@ function love.update(dt)
 			if slave.fire.c then
 				slave.fire.c = slave.fire.c - 1
 				if slave.fire.c <= 0 then
-					local x = slave.x
-					local y = slave.y
-					local bullet = slave.fire.bullet
-					local num = slave.fire.num
-					local v = slave.fire.v
-					local a = slave.a + slave.fire.offset
-					if slave.fire.directed and player then
-						a = math.deg(math.atan2(player.y - slave.y, player.x - slave.x))
+					local spawn = {}
+					if slave.fire.omni then
+						for kb, bullet in pairs(bullets) do
+							if bullet.t == slave.fire.omni then
+								spawn[#spawn + 1] = {x = bullet.x, y = bullet.y}
+								if slave.fire.destroy then
+									delete_later[kb] = true
+								end
+							end
+						end
+					else
+						spawn[#spawn + 1] = {x = slave.x, y = slave.y}
 					end
+					for ks, point in pairs(spawn) do
+						local x = point.x
+						local y = point.y
+						local bullet = slave.fire.bullet
+						local num = slave.fire.num
+						local v = slave.fire.v
+						local a = slave.a + slave.fire.offset
+						if slave.fire.directed and player then
+							a = math.deg(math.atan2(player.y - point.y, player.x - point.x))
+						end
 
-					if slave.fire.t == "burst" then
-						emit_burst(x, y, bullet, num, v)
-					elseif slave.fire.t == "stream" then
-						emit_stream(x, y, bullet, num, v, a)
-					elseif slave.fire.t == "tristream" then
-						emit_stream(x, y, bullet, num, v, a + 20)
-						emit_stream(x, y, bullet, num, v, a - 20)
-						emit_stream(x, y, bullet, num, v, a)
-					elseif slave.fire.t == "mirror" then
-						emit_stream(x, y, bullet, num, v, a)
-						emit_stream(x, y, bullet, num, v, a - 180)
-					elseif slave.fire.t == "buble" then
-						emit_burst(x, y, bullet, num, 0, math.cos(math.rad(a)) * v, math.sin(math.rad(a)) * v, slave.fire.r)
-					elseif slave.fire.t == "sinwave" then
-						slave.fire.sin_t = slave.fire.sin_t or 0
-						emit_stream(x, y, bullet, num, v, a + math.sin(slave.fire.sin_t * math.rad(slave.fire.sin_w)) * slave.fire.sin_a)
-						slave.fire.sin_t = slave.fire.sin_t + 1
-					elseif slave.fire.t == "spray" then
-						emit_spray(x, y, bullet, num, v, a, slave.fire.angle)
+						if slave.fire.t == "burst" then
+							emit_burst(x, y, bullet, num, v)
+						elseif slave.fire.t == "stream" then
+							emit_stream(x, y, bullet, num, v, a)
+						elseif slave.fire.t == "tristream" then
+							emit_stream(x, y, bullet, num, v, a + 20)
+							emit_stream(x, y, bullet, num, v, a - 20)
+							emit_stream(x, y, bullet, num, v, a)
+						elseif slave.fire.t == "mirror" then
+							emit_stream(x, y, bullet, num, v, a)
+							emit_stream(x, y, bullet, num, v, a - 180)
+						elseif slave.fire.t == "buble" then
+							emit_burst(x, y, bullet, num, 0, math.cos(math.rad(a)) * v, math.sin(math.rad(a)) * v, slave.fire.r)
+						elseif slave.fire.t == "sinwave" then
+							slave.fire.sin_t = slave.fire.sin_t or 0
+							emit_stream(x, y, bullet, num, v, a + math.sin(slave.fire.sin_t * math.rad(slave.fire.sin_w)) * slave.fire.sin_a)
+							slave.fire.sin_t = slave.fire.sin_t + 1
+						elseif slave.fire.t == "spray" then
+							emit_spray(x, y, bullet, num, v, a, slave.fire.angle)
+						end
 					end
 					slave.fire.c = slave.fire.rate
 				end
@@ -224,7 +246,6 @@ function love.update(dt)
 	end
 
 	-- update bullets
-	delete_later = {}
 	for k, bullet in pairs(bullets) do
 		bullet.x = bullet.x + bullet.vx
 		bullet.y = bullet.y + bullet.vy
@@ -243,7 +264,7 @@ function love.update(dt)
 		end
 	end
 
-	if #delete_later > 0 then
+	if next(delete_later) then
 		local new_bullets = {}
 		for k, bullet in pairs(bullets) do
 			if not delete_later[k] then
@@ -255,8 +276,8 @@ function love.update(dt)
 end
 
 function love.draw()
-	scrn_w = love.graphics.getWidth()
-	scrn_h = love.graphics.getHeight()
+	local scrn_w = love.graphics.getWidth()
+	local scrn_h = love.graphics.getHeight()
 
 	love.graphics.setColor(64, 64, 64)
 	love.graphics.draw(img_bg, 0, 0)
@@ -313,6 +334,8 @@ end
 function love.keypressed(key)
 	if key == "escape" then love.event.quit() end
 	if key == "space" then
-		emit_burst(0, 0, 4, 150, 5)--, 10, 10, 150)
+		--emit_burst(0, 0, 4, 150, 5)--, 10, 10, 150)
+		
+		pprint(bullets)
 	end
 end
