@@ -42,6 +42,10 @@ EditorWindow::EditorWindow(QWidget * parent)
 	QObject::connect(ui->modifierBox, SIGNAL(toggled(bool)), this, SLOT(stuffChanged()));
 	QObject::connect(ui->listWidget->itemDelegate(), SIGNAL(commitData(QWidget*)), this, SLOT(stuffChanged()));
 
+	ui->nBulletSpinbox->setMinimum(1);
+	ui->nOmniSpinbox->setMinimum(1);
+	ui->mBullet->setMinimum(1);
+
 	/*
 	QListWidget *listWidget;
 	QTabWidget *tabWidget;
@@ -79,7 +83,7 @@ EditorWindow::EditorWindow(QWidget * parent)
 
 	// TODO
 
-	filename = "test.json";
+	filename = "C:/work/danmaku/test.json";
 	on_actionAdd_Slave_triggered();
 }
 
@@ -278,6 +282,7 @@ void EditorWindow::save()
 		slave["name"] =		slaves[i].name;
 		slave["start"] =	slaves[i].start_time;
 		slave["end"] =		slaves[i].end_time;
+		slave["distance"] =	slaves[i].distance;
 		slave["angle"] =	slaves[i].start_angle;
 		slave["velocity"] =	slaves[i].angular_velocity;
 

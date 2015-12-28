@@ -1,0 +1,53 @@
+[
+    {
+        "angle": 58,
+        "distance": 32,
+        "end": 0,
+        "fire": {
+            "bullet": 1,
+            "count": 1,
+            "counter": 0,
+            "directed": false,
+            "offset": 0,
+            "rate": 69,
+            "type": "stream",
+            "velocity": 1
+        },
+        "name": "slave_1",
+        "start": 0,
+        "velocity": 2
+    },
+    {
+        "angle": 0,
+        "distance": 32,
+        "end": 0,
+        "fire": {
+            "bullet": 2,
+            "count": 8,
+            "counter": 0,
+            "destroy": true,
+            "directed": true,
+            "offset": 0,
+            "omni": 1,
+            "rate": 62,
+            "type": "mirror",
+            "velocity": 7
+        },
+        "name": "slave_2",
+        "start": 0,
+        "velocity": 0
+    },
+    {
+        "angle": 0,
+        "distance": 32,
+        "end": 0,
+        "mod": {
+            "amount": 1,
+            "bullet": 2,
+            "type": "turn"
+        },
+        "name": "slave_3",
+        "start": 0,
+        "velocity": 0
+    }
+]
