@@ -22,7 +22,6 @@ private slots:
 	void on_actionAdd_Slave_triggered();
 	void on_actionRemove_Slave_triggered();
 	void on_listWidget_currentRowChanged(int currentRow);
-	void on_listWidget_currentTextChanged(const QString &currentText);
 	void stuffChanged();
 
 private:
@@ -40,7 +39,7 @@ private:
 		float		distance = 32.0f;
 		float		start_angle = 0.0f;
 		float		angular_velocity = 0.0f;
-		char		n_type[32] = {0};
+		char		n_type[32] = "burst";
 		bool		n_directed = false;
 		bool		n_omni = false;
 		bool		n_omni_destroy = false;
@@ -57,10 +56,13 @@ private:
 		float		n_sin_c = 0.0f;
 		float		n_spray_angle = 0.0f;
 		bool		m_modifier = false;
-		char		m_type[32] = {0};
+		char		m_type[32] = "friction";
 		uint32_t	m_bullet = 0;
 		int32_t		m_amount = 0;
 	};
 
 	slave_t slaves[1024];
+
+	void load();
+	void save();
 };
