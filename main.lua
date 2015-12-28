@@ -13,7 +13,6 @@ local player = {x = 0, y = 300, chr = 1, t = 1, vx = 3, vy = 3}
 -- burst
 -- stream
 -- tristream (-20, 0, 20)
--- directed stream
 -- sinwave stream
 -- mirror stream
 -- buble
@@ -105,13 +104,16 @@ function love.load()
 
 	characters[#characters + 1] = {x = 0, y = 0, t = 2}
 
-	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 2, fire = {t = "burst", bullet = 2, offset = 0, rate = 20, c = 10, num = 100, v = 3}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 2, fire = {t = "burst", bullet = 3, offset = 0, rate = 20, c = 10, num = 100, v = 3}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "stream", bullet = 3, offset = 0, rate = 10, c = 10, num = 15, v = 15, directed = true}}
+	slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "stream", bullet = 3, offset = 0, rate = 10, c = 10, num = 15, v = 15}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 2, fire = {t = "tristream", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 2, fire = {t = "mirror", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 1, fire = {t = "buble", bullet = 3, offset = 0, rate = 20, c = 10, num = 15, v = 15, r = 50}}
 	--slaves[#slaves + 1] = {chr = #characters, d = 64, a = 45, va = 0, fire = {t = "sinwave", bullet = 3, offset = 0, rate = 0, c = 0, num = 1, v = 15, sin_t = 0, sin_w = 10, sin_a = 30, directed = true}}
-	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, fire = {t = "spray", bullet = 2, offset = 0, rate = 20, c = 10, num = 100, v = 3, angle = 90, directed = true}}
+	--slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, fire = {t = "spray", bullet = 3, offset = 0, rate = 20, c = 10, num = 100, v = 3, angle = 90, directed = true}}
+
+	slaves[#slaves + 1] = {chr = #characters, d = 32, a = 45, va = 0, mod = {t = "friction", bullet = 3, v = 0.3}}
 end
 
 function love.update(dt)
@@ -185,6 +187,21 @@ function love.update(dt)
 				end
 			else
 				slave.fire.c = slave.fire.rate
+			end
+		elseif slave.mod then
+			if slave.mod.t == "friction" then
+				for k, bullet in pairs(bullets) do
+					local v = slave.mod.v
+					if bullet.t == slave.mod.bullet then
+						local bv = math.sqrt(bullet.vx * bullet.vx + bullet.vy * bullet.vy)
+						if bv > 0 or v < 0 then
+							local bv2 = bv - v
+							if v > 0 and bv2 < 0 then bv2 = 0 end
+							bullet.vx = bullet.vx * bv2 / bv
+							bullet.vy = bullet.vy * bv2 / bv
+						end
+					end
+				end
 			end
 		end
 	end
