@@ -1,0 +1,20 @@
+[
+    {
+        "angle": 5,
+        "distance": 32,
+        "end": 0,
+        "fire": {
+            "bullet": 2,
+            "count": 49,
+            "counter": 0,
+            "directed": false,
+            "offset": 0,
+            "rate": 11,
+            "type": "burst",
+            "velocity": 1
+        },
+        "name": "slave_1",
+        "start": 0,
+        "velocity": 2
+    }
+]
