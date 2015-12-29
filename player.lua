@@ -15,7 +15,7 @@ function player.spawn(self, x, y, engine)
 	player.chr = engine:spawn_character(x, y, 1)
 end
 
-function player.update(self, scrn_w, scrn_h, engine, render)
+function player.update(self, scrn_w, scrn_h, npc, engine, render)
 	local pdx = 0
 	local pdy = 0
 	if love.keyboard.isDown("left") then  pdx = -1 end
@@ -37,7 +37,7 @@ function player.update(self, scrn_w, scrn_h, engine, render)
 	end
 
 	--if love.keyboard.isDown("space") then
-	if 1 then
+	if npc:is_fighting() then
 		if not self.fire then
 			local slaves, slaves_text = engine:parse_slaves("player2.json")
 			engine:spawn_slaves(slaves, self.chr)

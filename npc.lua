@@ -28,6 +28,10 @@ function npc.fast_spawn(self, x, y, engine, player)
 	self.ai_mode = "next_fight"
 end
 
+function npc.is_fighting(self)
+	return self.ai_mode ~= "disabled" and self.ai_mode ~= "intro" and self.ai_mode ~= "outro"
+end
+
 function npc.update(self, engine, player, dialog)
 	if self.edit_file then
 		local slaves, slaves_text = engine:parse_slaves(self.edit_file)
@@ -67,7 +71,7 @@ function npc.update(self, engine, player, dialog)
 		y = y - vy
 		if y < -450 then
 			y = -450
-			self.ai_mode = "stay"
+			self.ai_mode = "disabled"
 		end
 		engine.characters[self.chr].y = y
 	elseif self.ai_mode == "next_fight" then
@@ -87,14 +91,13 @@ function npc.update(self, engine, player, dialog)
 			self.fight_lvl = self.fight_lvl + 1
 			self.ai_mode = "next_fight"
 			engine:delete_bullets()
-			engine:delete_slaves(self.chr)
+			engine:delete_slaves()
 		end
 	elseif self.ai_mode == "stay" then
 	elseif self.ai_mode == "sin_x" then
 		--engine.characters[self.chr].x = math.sin(self.counter * 0.01) * 100 + self.offset
 		--self.counter = self.counter + 1
 	end
-
 end
 
 return npc
