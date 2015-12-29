@@ -7,6 +7,7 @@ api :
 engine = require("bulletengine")
 chr_index = engine:spawn_character(x, y, type, enemy)
 engine:spawn_slaves(slaves, chr_index)
+slaves, slaves_text = engine:parse_slaves(name)
 engine:delete_slaves(chr_index)
 engine:delete_bullets(bullet_type)
 engine:update(scrn_w, scrn_h)
@@ -62,12 +63,12 @@ local engine = {
 
 function engine.spawn_character(self, x, y, type, enemy)
 	self.characters[#self.characters + 1] = {x = x, y = y, type = type, enemy = enemy}
-	return self.characters
+	return #self.characters
 end
 
 function engine.spawn_slaves(self, slaves, chr_index)
 	for k, slave in pairs(slaves) do
-		slave.chr = slave.chr_index
+		slave.chr = chr_index
 		self.slaves[#self.slaves + 1] = slave
 	end
 end
@@ -97,6 +98,18 @@ function engine.delete_bullets(self, bullet_type)
 		end
 	end
 	self:remove_marked_bullets()
+end
+
+local json = require("json")
+function engine.parse_slaves(self, name)
+	local slaves_text, slaves_size = love.filesystem.read(name)
+	if slaves_text ~= nil and slaves_size > 0 then
+		local slaves = json:decode(slaves_text)
+		if slaves ~= nil then
+			return slaves, json:encode(slaves)
+		end
+	end
+	return nil, nil
 end
 
 function engine.emit_burst(self, x, y, bullet, count, velocity, velocity_x, velocity_y, start_radius)
