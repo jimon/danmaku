@@ -49,7 +49,7 @@ EditorWindow::EditorWindow(QWidget * parent)
 	QObject::connect(ui->listWidget->itemDelegate(), SIGNAL(commitData(QWidget*)), this, SLOT(stuffChanged()));
 
 	ui->startTimeSlider->setMinimum(0); ui->startTimeSlider->setMaximum(1000);
-	ui->endTimeSlider->setMinimum(0); ui->endTimeSlider->setMaximum(1000);
+	ui->endTimeSlider->setMinimum(-1); ui->endTimeSlider->setMaximum(1000);
 
 	ui->distanceSlider->setMinimum(0); ui->distanceSlider->setMaximum(256);
 	ui->startAngleSlider->setMinimum(0); ui->startAngleSlider->setMaximum(360);

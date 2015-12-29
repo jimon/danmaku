@@ -2,7 +2,7 @@
     {
         "angle": 0,
         "distance": 0,
-        "end": 0,
+        "end": -1,
         "fire": {
             "bullet": 2,
             "count": 1,
@@ -20,7 +20,7 @@
     {
         "angle": 0,
         "distance": 32,
-        "end": 0,
+        "end": -1,
         "mod": {
             "amount": 1,
             "bullet": 2,
@@ -33,7 +33,7 @@
     {
         "angle": 0,
         "distance": 32,
-        "end": 0,
+        "end": -1,
         "fire": {
             "bullet": 3,
             "count": 68,

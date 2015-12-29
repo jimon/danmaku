@@ -12,7 +12,6 @@ function love.load(args)
 	render:load()
 	player:spawn(0, 300, engine)
 
-	pprint(args)
 	if args[2] == "--edit" then
 		npc:edit_mode(0, 0, engine, player, args[3])
 	else

@@ -26,6 +26,8 @@ local engine = {
 	slaves = {
 		--[[
 		chr = character index
+		start = start frame
+		end = end frame, or -1 for forever
 		distance = distance from character in pixels
 		angle = angle to character
 		velocity = angular velocity in frames
@@ -56,6 +58,9 @@ local engine = {
 		enemy = index of enemy character (or nil)
 		]]--
 	},
+	slaves_to_delete = {
+		-- key is slave index, value is true for removal
+	},
 	bullets_to_delete = {
 		-- key is bullet index, value is true for removal
 	}
@@ -74,21 +79,11 @@ function engine.spawn_slaves(self, slaves, chr_index)
 end
 
 function engine.delete_slaves(self, chr_index)
-	local slaves_to_delete = {}
 	for k, slave in pairs(self.slaves) do
 		if chr_index == nil or slave.chr == chr_index then
-			slaves_to_delete[k] = true
+			self.slaves_to_delete[k] = true
 		end
-	end
-	if next(slaves_to_delete) then
-		local new_slaves = {}
-		for k, slave in pairs(self.slaves) do
-			if not slaves_to_delete[k] then
-				new_slaves[#new_slaves + 1] = slave
-			end
-		end
-		self.slaves = new_slaves
-	end
+	end	self:remove_marked_slaves()
 end
 
 function engine.delete_bullets(self, bullet_type)
@@ -254,6 +249,19 @@ function engine.slave_gravity(self, slave)
 	end
 end
 
+function engine.remove_marked_slaves(self)
+	if next(self.slaves_to_delete) then
+		local new_slaves = {}
+		for k, slave in pairs(self.slaves) do
+			if not self.slaves_to_delete[k] then
+				new_slaves[#new_slaves + 1] = slave
+			end
+		end
+		self.slaves = new_slaves
+		self.slaves_to_delete = {}
+	end
+end
+
 function engine.remove_marked_bullets(self)
 	-- delete bullets
 	if next(self.bullets_to_delete) then
@@ -274,9 +282,18 @@ function engine.update(self, scrn_w, scrn_h)
 		local angle = math.rad(slave.angle)
 		slave.x = self.characters[slave.chr].x + math.cos(angle) * slave.distance
 		slave.y = self.characters[slave.chr].y + math.sin(angle) * slave.distance
-		slave.angle = slave.angle + slave.velocity
 
-		if slave.fire then
+		if slave["end"] ~= -1 then
+			slave["end"] = slave["end"] - 1
+			if slave["end"] <= 0 then
+				self.slaves_to_delete[k] = true
+			end
+		end
+
+		if slave.start > 0 then
+			slave.start = slave.start - 1
+		elseif slave.fire then
+			slave.angle = slave.angle + slave.velocity
 			if slave.fire.counter then
 				slave.fire.counter = slave.fire.counter - 1
 				if slave.fire.counter <= 0 then
@@ -317,6 +334,7 @@ function engine.update(self, scrn_w, scrn_h)
 		end
 	end
 
+	self:remove_marked_slaves()
 	self:remove_marked_bullets()
 end
 
