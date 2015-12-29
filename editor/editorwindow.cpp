@@ -48,6 +48,26 @@ EditorWindow::EditorWindow(QWidget * parent)
 	QObject::connect(ui->modifierBox, SIGNAL(toggled(bool)), this, SLOT(stuffChanged()));
 	QObject::connect(ui->listWidget->itemDelegate(), SIGNAL(commitData(QWidget*)), this, SLOT(stuffChanged()));
 
+	ui->startTimeSlider->setMinimum(0); ui->startTimeSlider->setMaximum(1000);
+	ui->endTimeSlider->setMinimum(0); ui->endTimeSlider->setMaximum(1000);
+
+	ui->distanceSlider->setMinimum(0); ui->distanceSlider->setMaximum(256);
+	ui->startAngleSlider->setMinimum(0); ui->startAngleSlider->setMaximum(360);
+	ui->angulerVelocitySlider->setMinimum(0); ui->angulerVelocitySlider->setMaximum(200); ui->angulerVelocitySlider->setProperty("scale", 10);
+
+	ui->nBulletCount->setMinimum(0); ui->nBulletCount->setMaximum(400);
+	ui->nBulletVelocity->setMinimum(-1000); ui->nBulletVelocity->setMaximum(1000); ui->nBulletVelocity->setProperty("scale", 10);
+	ui->nOffsetAngle->setMinimum(0); ui->nOffsetAngle->setMaximum(360);
+	ui->nBubleRadius->setMinimum(0); ui->nBubleRadius->setMaximum(400);
+	ui->nSinA->setMinimum(0); ui->nSinA->setMaximum(1000); ui->nSinA->setProperty("scale", 10);
+	ui->nSinW->setMinimum(0); ui->nSinW->setMaximum(1000); ui->nSinW->setProperty("scale", 10);
+	ui->nSinCounter->setMinimum(0); ui->nSinCounter->setMaximum(100);
+	ui->nSprayAngle->setMinimum(0); ui->nSprayAngle->setMaximum(360);
+	ui->mAmount->setMinimum(-1500); ui->mAmount->setMaximum(1500); ui->mAmount->setProperty("scale", 50);
+
+	ui->nFireRate->setMinimum(0); ui->nFireRate->setMaximum(500);
+	ui->nFireCounter->setMinimum(0); ui->nFireCounter->setMaximum(500);
+
 	ui->nBulletSpinbox->setMinimum(1);
 	ui->nOmniSpinbox->setMinimum(1);
 	ui->mBullet->setMinimum(1);
@@ -186,9 +206,14 @@ void EditorWindow::on_listWidget_currentRowChanged(int currentRow)
 	ignoreChanges = true;
 
 	#define _set_val(__slider, __value) \
-		ui->__slider->setValue(slaves[row].__value);
+	{ \
+		bool ok = true; \
+		float scale = (float)ui->__slider->property("scale").toInt(&ok); \
+		if(!ok) \
+			scale = 1.0f; \
+		ui->__slider->setValue((int)((float)slaves[row].__value * scale)); \
+	}
 
-	// TODO floats ?
 	_set_val(startTimeSlider, start_time);
 	_set_val(endTimeSlider, end_time);
 	_set_val(distanceSlider, distance);
@@ -218,6 +243,8 @@ void EditorWindow::on_listWidget_currentRowChanged(int currentRow)
 	ui->nOmniDestroy->setChecked(slaves[row].n_omni_destroy);
 	ui->modifierBox->setChecked(slaves[row].m_modifier);
 
+	ui->tabWidget->setCurrentIndex(slaves[row].m_modifier ? 1 : 0);
+
 	ignoreChanges = false;
 }
 
@@ -246,9 +273,14 @@ void EditorWindow::stuffChanged()
 		//snapshots_redo.clear();
 
 		#define _read_val(__slider, __value) \
-			slaves[row].__value = ui->__slider->value();
+		{ \
+			bool ok = true; \
+			float scale = (float)ui->__slider->property("scale").toInt(&ok); \
+			if(!ok) \
+				scale = 1.0f; \
+			slaves[row].__value = ((float)ui->__slider->value()) / scale; \
+		}
 
-		// TODO floats ?
 		_read_val(startTimeSlider, start_time);
 		_read_val(endTimeSlider, end_time);
 		_read_val(distanceSlider, distance);

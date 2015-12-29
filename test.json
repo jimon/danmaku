@@ -1,0 +1,34 @@
+[
+    {
+        "angle": 60,
+        "distance": 33,
+        "end": 0,
+        "fire": {
+            "angle": 44,
+            "bullet": 1,
+            "count": 7,
+            "counter": 0,
+            "directed": false,
+            "offset": 0,
+            "rate": 50,
+            "type": "spray",
+            "velocity": 5
+        },
+        "name": "slave_1",
+        "start": 0,
+        "velocity": 1.2999999523162842
+    },
+    {
+        "angle": 0,
+        "distance": 32,
+        "end": 0,
+        "mod": {
+            "amount": -0.37999999523162842,
+            "bullet": 1,
+            "type": "gravity"
+        },
+        "name": "slave_3",
+        "start": 0,
+        "velocity": 0
+    }
+]
