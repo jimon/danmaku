@@ -7,24 +7,29 @@ local engine = require("bulletengine")
 local render = require("render")
 local player = require("player")
 local npc = require("npc")
+local dialog = require("dialog")
 
 function love.load(args)
 	render:load()
 	player:spawn(0, 300, engine)
 
 	if args[2] == "--edit" then
-		npc:edit_mode(0, 0, engine, player, args[3])
+		npc:edit_mode(0, -200, engine, player, args[3])
 	else
-		npc:spawn(0, -200, engine, player)
+		npc:spawn(0, -500, engine, player)
+		--npc:fast_spawn(0, -250, engine, player)
 	end
 end
 
 function love.update(dt)
 	local scrn_w = love.graphics.getWidth()
 	local scrn_h = love.graphics.getHeight()
-	player:update(scrn_w, scrn_h, engine, render)
-	npc:update(engine, player)
-	engine:update(scrn_w, scrn_h)
+	dialog:update(engine, render)
+	if not dialog:is_active() then
+		player:update(scrn_w, scrn_h, engine, render)
+		npc:update(engine, player, dialog)
+		engine:update(scrn_w, scrn_h)
+	end
 end
 
 function love.draw()
