@@ -43,8 +43,9 @@ function npc.update(self, engine, player, dialog)
 		end
 	end
 
-	if self.ai_mode == "disabled" then
-	elseif self.ai_mode == "intro" then
+	if self.ai_mode == "disabled" then -- do nothing
+
+	elseif self.ai_mode == "intro" then -- intro sequence
 		local vy = 3
 		local y = engine.characters[self.chr].y
 		y = y + vy
@@ -65,7 +66,8 @@ function npc.update(self, engine, player, dialog)
 			self.ai_mode = "next_fight"
 		end
 		engine.characters[self.chr].y = y
-	elseif self.ai_mode == "outro" then
+
+	elseif self.ai_mode == "outro" then -- outro sequence
 		local vy = 4
 		local y = engine.characters[self.chr].y
 		y = y - vy
@@ -74,29 +76,48 @@ function npc.update(self, engine, player, dialog)
 			self.ai_mode = "disabled"
 		end
 		engine.characters[self.chr].y = y
-	elseif self.ai_mode == "next_fight" then
+
+	elseif self.ai_mode == "next_fight" then -- setup next fight
 		self.ai_mode = "fight"
 		if self.fight_lvl == 0 then
 			local slaves, slaves_text = engine:parse_slaves("test2.json")
 			engine:spawn_slaves(slaves, self.chr)
-			self.counter = 360
+			self.counter = 3600
 		elseif self.fight_lvl == 1 then
+			local slaves, slaves_text = engine:parse_slaves("test1.json")
+			engine:spawn_slaves(slaves, self.chr)
+			self.counter = 3600
+			self.offset = engine.characters[self.chr].x - math.sin(self.counter * 0.01) * 100
+		elseif self.fight_lvl == 2 then
+			engine:delete_slaves()
 			dialog:add(self.chr, "ok\nu won")
 			dialog:add(player.chr, "yay")
 			self.ai_mode = "outro"
 		end
-	elseif self.ai_mode == "fight" then
+
+	elseif self.ai_mode == "next_fight_wait" then -- wait slot between fights
 		self.counter = self.counter - 1
+
+		if self.counter <= 0 then
+			self.ai_mode = "next_fight"
+		end
+
+	elseif self.ai_mode == "fight" then -- fight logic
+		self.counter = self.counter - 1
+
+		if self.fight_lvl == 1 then
+			engine.characters[self.chr].x = math.sin(self.counter * 0.01) * 100 + self.offset
+		end
+
 		if self.counter <= 0 then
 			self.fight_lvl = self.fight_lvl + 1
-			self.ai_mode = "next_fight"
+			self.ai_mode = "next_fight_wait"
+			self.counter = 50
 			engine:delete_bullets()
-			engine:delete_slaves()
+			engine:delete_slaves(self.chr)
 		end
-	elseif self.ai_mode == "stay" then
-	elseif self.ai_mode == "sin_x" then
-		--engine.characters[self.chr].x = math.sin(self.counter * 0.01) * 100 + self.offset
-		--self.counter = self.counter + 1
+
+	elseif self.ai_mode == "stay" then -- just stay
 	end
 end
 

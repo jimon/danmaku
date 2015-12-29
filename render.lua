@@ -35,7 +35,7 @@ function render.load(self)
 	self.main_font:setFilter("nearest", "nearest")
 end
 
-function render.render(self, engine, player)
+function render.render(self, engine, player, npc)
 	local scrn_w = love.graphics.getWidth()
 	local scrn_h = love.graphics.getHeight()
 
@@ -108,6 +108,7 @@ function render.render(self, engine, player)
 	end
 
 	love.graphics.print("bullets " .. #engine.bullets, 2, 2)
+	love.graphics.print(string.format("ai counter %.1fs", npc.counter / 60), 2, 24)
 end
 
 return render

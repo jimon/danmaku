@@ -33,7 +33,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	render:render(engine, player)
+	render:render(engine, player, npc)
 end
 
 function love.keypressed(key)
