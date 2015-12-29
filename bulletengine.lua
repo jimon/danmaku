@@ -294,13 +294,13 @@ function engine.update(self, scrn_w, scrn_h)
 			slave.start = slave.start - 1
 		elseif slave.fire then
 			slave.angle = slave.angle + slave.velocity
-			if slave.fire.counter then
+			if slave.fire.counter ~= nil then
 				slave.fire.counter = slave.fire.counter - 1
-				if slave.fire.counter <= 0 then
-					self:slave_fire(slave)
-					slave.fire.counter = slave.fire.rate
-				end
 			else
+				slave.fire.counter = slave.fire.rate
+			end
+			if slave.fire.counter <= 0 then
+				self:slave_fire(slave)
 				slave.fire.counter = slave.fire.rate
 			end
 		elseif slave.mod then

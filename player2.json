@@ -1,0 +1,56 @@
+[
+    {
+        "angle": 90,
+        "distance": 32,
+        "end": -1,
+        "fire": {
+            "bullet": 1,
+            "count": 1,
+            "counter": 0,
+            "directed": false,
+            "offset": 180,
+            "rate": 4,
+            "type": "stream",
+            "velocity": 38
+        },
+        "name": "main",
+        "start": 0,
+        "velocity": 0
+    },
+    {
+        "angle": 70,
+        "distance": 29,
+        "end": -1,
+        "fire": {
+            "bullet": 1,
+            "count": 1,
+            "counter": 0,
+            "directed": false,
+            "offset": 200,
+            "rate": 4,
+            "type": "stream",
+            "velocity": 44.700000762939453
+        },
+        "name": "right",
+        "start": 0,
+        "velocity": 0
+    },
+    {
+        "angle": 110,
+        "distance": 29,
+        "end": -1,
+        "fire": {
+            "bullet": 1,
+            "count": 1,
+            "counter": 0,
+            "directed": false,
+            "offset": 160,
+            "rate": 4,
+            "type": "stream",
+            "velocity": 44.700000762939453
+        },
+        "name": "left",
+        "start": 0,
+        "velocity": 0
+    }
+]

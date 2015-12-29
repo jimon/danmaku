@@ -38,7 +38,7 @@ private:
 	{
 		char		name[32] = {0};
 		float		start_time = 0.0f;
-		float		end_time = 0.0f;
+		float		end_time = -1.0f;
 		float		distance = 32.0f;
 		float		start_angle = 0.0f;
 		float		angular_velocity = 0.0f;

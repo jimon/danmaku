@@ -5,7 +5,8 @@ local player = {
 	chr = nil,
 	type = 1,
 	vx = 3,
-	vy = 3
+	vy = 3,
+	fire = false
 }
 
 function player.spawn(self, x, y, engine)
@@ -33,6 +34,19 @@ function player.update(self, scrn_w, scrn_h, engine, render)
 	if self.chr then
 		engine.characters[self.chr].x = self.x
 		engine.characters[self.chr].y = self.y - 10
+	end
+	
+	if love.keyboard.isDown("space") then
+		if not self.fire then
+			local slaves, slaves_text = engine:parse_slaves("player1.json")
+			engine:spawn_slaves(slaves, self.chr)
+			self.fire = true
+		end
+	else
+		if self.fire then
+			engine:delete_slaves(self.chr)
+			self.fire = false
+		end
 	end
 end
 
