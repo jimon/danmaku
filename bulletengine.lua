@@ -107,7 +107,11 @@ function engine.parse_slaves(self, name)
 		local slaves = json:decode(slaves_text)
 		if slaves ~= nil then
 			return slaves, json:encode(slaves)
+		else
+			print("fail to parse json in '" .. name .. "'")
 		end
+	else
+		print("fail to read json in '" .. name .. "'")
 	end
 	return nil, nil
 end

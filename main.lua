@@ -9,12 +9,15 @@ local player = require("player")
 local npc = require("npc")
 
 function love.load(args)
-	pprint(args)
-
 	render:load()
-
 	player:spawn(0, 300, engine)
-	npc:spawn(0, 0, engine, player)
+
+	pprint(args)
+	if args[2] == "--edit" then
+		npc:edit_mode(0, 0, engine, player, args[3])
+	else
+		npc:spawn(0, 0, engine, player)
+	end
 end
 
 function love.update(dt)

@@ -16,14 +16,14 @@
         },
         "name": "slave_1",
         "start": 0,
-        "velocity": 1.2999999523162842
+        "velocity": 6.3000001907348633
     },
     {
         "angle": 0,
-        "distance": 32,
+        "distance": 35,
         "end": 0,
         "mod": {
-            "amount": -0.37999999523162842,
+            "amount": -0.36000001430511475,
             "bullet": 1,
             "type": "gravity"
         },

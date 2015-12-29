@@ -191,7 +191,7 @@ void EditorWindow::on_actionRemove_Slave_triggered()
 void EditorWindow::on_actionRun_triggered()
 {
 	QProcess game;
-	game.startDetached(gameExe, QStringList() << filename);
+	game.startDetached(gameExe, QStringList() << QFileInfo(gameExe).dir().relativeFilePath(filename));
 }
 
 void EditorWindow::on_listWidget_currentRowChanged(int currentRow)
