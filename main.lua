@@ -5,6 +5,8 @@ require("strict")
 local pprint = require("pprint")
 pprint.setup {show_all = true, wrap_array = true}
 
+local json = require("json")
+
 local engine = require("bulletengine")
 
 local img_bg = nil
@@ -14,7 +16,26 @@ local img_bullets = nil
 local img_characters = nil
 
 --local player = nil
-local player = {x = 0, y = 300, chr = 1, t = 1, vx = 3, vy = 3}
+engine.characters[#engine.characters + 1] = {x = 0, y = 300, type = 1}
+local player = {x = 0, y = 300, chr = 1, type = 1, vx = 3, vy = 3}
+
+--[[
+
+function engine.hotreload(self)
+	local effect_text, effect_size = love.filesystem.read("test2.json")
+	if effect_text ~= nil and effect_size > 0 then
+		local slaves_new = JSON:decode(effect_text)
+		if slaves_new ~= nil then
+			local slaves_json_new = JSON:encode(slaves_new)
+			if self.slaves_json ~= slaves_json_new then
+				self.slaves = slaves_new
+				self.slaves_json = slaves_json_new
+				self.bullets = {}
+			end
+		end
+	end
+end]]--
+
 
 function love.load(args)
 	print("hello")
@@ -35,7 +56,7 @@ function love.load(args)
 	img_characters[#img_characters + 1] = love.graphics.newQuad(0 * 64, 4 * 64, 64, 64, img_characters_atlas:getWidth(), img_characters_atlas:getHeight())
 	img_characters[#img_characters + 1] = love.graphics.newQuad(0 * 64, 3 * 64, 64, 64, img_characters_atlas:getWidth(), img_characters_atlas:getHeight())
 
-	engine:spawn_character()
+	engine:spawn_character(0, 0, 2)
 end
 
 function love.update(dt)
@@ -56,7 +77,7 @@ function love.update(dt)
 		end
 		player.x = player.x + player.vx * pdx
 		player.y = player.y + player.vy * pdy
-		local img_x, img_y, img_w, img_h = img_bullets[player.t]:getViewport()
+		local img_x, img_y, img_w, img_h = img_bullets[player.type]:getViewport()
 		player.x = math.min(math.max(player.x, -scrn_w / 2 + img_w / 2), scrn_w / 2 - img_w / 2)
 		player.y = math.min(math.max(player.y, -scrn_h / 2 + img_h / 2), scrn_h / 2 - img_h / 2)
 		if player.chr then
@@ -78,10 +99,10 @@ function love.draw()
 	love.graphics.setColor(255, 255, 255)
 	-- render characters
 	for k, chr in pairs(engine.characters) do
-		local img_x, img_y, img_w, img_h = img_characters[chr.t]:getViewport()
+		local img_x, img_y, img_w, img_h = img_characters[chr.type]:getViewport()
 		love.graphics.draw(
 			img_characters_atlas,
-			img_characters[chr.t],
+			img_characters[chr.type],
 			chr.x + scrn_w / 2,
 			chr.y + scrn_h / 2 - 7,
 			chr.a, 1, 1, img_w / 2, img_h / 2)
@@ -112,10 +133,10 @@ function love.draw()
 
 	-- render player
 	if player then
-		local img_x, img_y, img_w, img_h = img_bullets[player.t]:getViewport()
+		local img_x, img_y, img_w, img_h = img_bullets[player.type]:getViewport()
 		love.graphics.draw(
 			img_bullets_atlas,
-			img_bullets[player.t],
+			img_bullets[player.type],
 			player.x + scrn_w / 2,
 			player.y + scrn_h / 2,
 			0, 1, 1, img_w / 2, img_h / 2)
