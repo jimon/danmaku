@@ -1,5 +1,16 @@
--- simple danmaku bullet engine
--- inspired by bullet pattern studio
+--[[
+simple danmaku bullet engine
+inspired by bullet pattern studio
+
+api :
+
+engine = require("bulletengine")
+chr_index = engine:spawn_character(x, y, type, enemy)
+engine:spawn_slaves(slaves, chr_index)
+engine:delete_slaves(chr_index)
+engine:delete_bullets(bullet_type)
+engine:update(scrn_w, scrn_h)
+]]--
 
 local engine = {
 	bullets = {
@@ -44,7 +55,7 @@ local engine = {
 		enemy = index of enemy character (or nil)
 		]]--
 	},
-	delete_bullets = {
+	bullets_to_delete = {
 		-- key is bullet index, value is true for removal
 	}
 }
@@ -59,6 +70,33 @@ function engine.spawn_slaves(self, slaves, chr_index)
 		slave.chr = slave.chr_index
 		self.slaves[#self.slaves + 1] = slave
 	end
+end
+
+function engine.delete_slaves(self, chr_index)
+	local slaves_to_delete = {}
+	for k, slave in pairs(self.slaves) do
+		if chr_index == nil or slave.chr == chr_index then
+			slaves_to_delete[k] = true
+		end
+	end
+	if next(slaves_to_delete) then
+		local new_slaves = {}
+		for k, slave in pairs(self.slaves) do
+			if not slaves_to_delete[k] then
+				new_slaves[#new_slaves + 1] = slave
+			end
+		end
+		self.slaves = new_slaves
+	end
+end
+
+function engine.delete_bullets(self, bullet_type)
+	for k, bullet in pairs(self.bullets) do
+		if bullet_type == nil or bullet.t == bullet_type then
+			self.bullets_to_delete[k] = true
+		end
+	end
+	self:remove_marked_bullets()
 end
 
 function engine.emit_burst(self, x, y, bullet, count, velocity, velocity_x, velocity_y, start_radius)
@@ -121,7 +159,7 @@ function engine.slave_fire(self, slave)
 			if bullet.t == slave.fire.omni then
 				spawn[#spawn + 1] = {x = bullet.x, y = bullet.y}
 				if slave.fire.destroy then
-					self.delete_bullets[kb] = true
+					self.bullets_to_delete[kb] = true
 				end
 			end
 		end
@@ -199,6 +237,20 @@ function engine.slave_gravity(self, slave)
 	end
 end
 
+function engine.remove_marked_bullets(self)
+	-- delete bullets
+	if next(self.bullets_to_delete) then
+		local new_bullets = {}
+		for k, bullet in pairs(self.bullets) do
+			if not self.bullets_to_delete[k] then
+				new_bullets[#new_bullets + 1] = bullet
+			end
+		end
+		self.bullets = new_bullets
+		self.bullets_to_delete = {}
+	end
+end
+
 function engine.update(self, scrn_w, scrn_h)
 	-- update slaves
 	for k, slave in pairs(self.slaves) do
@@ -244,21 +296,11 @@ function engine.update(self, scrn_w, scrn_h)
 			(bullet.y + img_h / 2 < -scrn_h / 2) or
 			(bullet.y - img_h / 2 >  scrn_h / 2)
 			then
-			self.delete_bullets[k] = true
+			self.bullets_to_delete[k] = true
 		end
 	end
 
-	-- delete bullets
-	if next(self.delete_bullets) then
-		local new_bullets = {}
-		for k, bullet in pairs(self.bullets) do
-			if not self.delete_bullets[k] then
-				new_bullets[#new_bullets + 1] = bullet
-			end
-		end
-		self.bullets = new_bullets
-		self.delete_bullets = {}
-	end
+	self:remove_marked_bullets()
 end
 
 return engine
