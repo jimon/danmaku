@@ -1,6 +1,7 @@
 
 local npc = {
 	chr = nil,
+	counter = 0,
 
 	-- edit mode
 	edit_file = nil,
@@ -16,7 +17,7 @@ end
 function npc.spawn(self, x, y, engine, player)
 	self.chr = engine:spawn_character(x, y, 2, player.chr)
 
-	local slaves, slaves_text = engine:parse_slaves("test2.json")
+	local slaves, slaves_text = engine:parse_slaves("test1.json")
 	engine:spawn_slaves(slaves, self.chr)
 end
 
@@ -30,6 +31,9 @@ function npc.update(self, engine, player)
 			self.edit_slaves_text = slaves_text
 		end
 	end
+
+	engine.characters[self.chr].x = math.sin(self.counter * 0.01) * 100
+	self.counter = self.counter + 1
 end
 
 return npc

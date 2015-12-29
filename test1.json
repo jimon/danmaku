@@ -9,13 +9,13 @@
             "counter": 6,
             "directed": false,
             "offset": 0,
-            "rate": 0,
+            "rate": 17,
             "type": "stream",
-            "velocity": 28
+            "velocity": 4.9000000953674316
         },
         "name": "slave_1",
         "start": 0,
-        "velocity": 12
+        "velocity": 1.5
     },
     {
         "angle": 0,
