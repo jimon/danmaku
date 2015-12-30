@@ -13,9 +13,9 @@ local render = {
 }
 
 function render.load(self)
-	self.bg = love.graphics.newImage("bg.jpg")
-	self.bullets_atlas = love.graphics.newImage("bullets.png")
-	self.characters_atlas = love.graphics.newImage("characters.png")
+	self.bg = love.graphics.newImage("art/bg.jpg")
+	self.bullets_atlas = love.graphics.newImage("art/bullets.png")
+	self.characters_atlas = love.graphics.newImage("art/characters.png")
 
 	self.bullets = {}
 	self.bullets[#self.bullets + 1] = love.graphics.newQuad(4 * 9 + 1, 1, 8, 8,		self.bullets_atlas:getWidth(), self.bullets_atlas:getHeight())
@@ -28,10 +28,10 @@ function render.load(self)
 	self.characters[#self.characters + 1] = love.graphics.newQuad(0 * 64, 4 * 64, 64, 64, self.characters_atlas:getWidth(), self.characters_atlas:getHeight())
 	self.characters[#self.characters + 1] = love.graphics.newQuad(0 * 64, 3 * 64, 64, 64, self.characters_atlas:getWidth(), self.characters_atlas:getHeight())
 
-	self.speech_buble = love.graphics.newImage("speech.png")
+	self.speech_buble = love.graphics.newImage("art/speech.png")
 	self.speech_buble:setFilter("nearest", "nearest")
 
-	self.main_font = love.graphics.newFont("coders_crux.ttf", 32);
+	self.main_font = love.graphics.newFont("art/coders_crux.ttf", 32);
 	self.main_font:setFilter("nearest", "nearest")
 end
 
