@@ -89,6 +89,18 @@ function npc.update(self, engine, player, dialog)
 			self.counter = 60 * 60
 			self.offset = engine.characters[self.chr].x - math.sin(self.counter * 0.01) * 100
 		elseif self.fight_lvl == 2 then
+			local slaves, slaves_text = engine:parse_slaves("patterns/fight_1_3.json")
+			engine:spawn_slaves(slaves, self.chr)
+			self.counter = 60 * 60
+		elseif self.fight_lvl == 3 then
+			local slaves, slaves_text = engine:parse_slaves("patterns/fight_1_4.json")
+			engine:spawn_slaves(slaves, self.chr)
+			self.counter = 60 * 60
+		elseif self.fight_lvl == 4 then
+			local slaves, slaves_text = engine:parse_slaves("patterns/fight_1_5.json")
+			engine:spawn_slaves(slaves, self.chr)
+			self.counter = 60 * 60
+		elseif self.fight_lvl == 5 then
 			engine:delete_slaves()
 			dialog:add(self.chr, "ok\nu won")
 			dialog:add(player.chr, "yay")
@@ -98,8 +110,11 @@ function npc.update(self, engine, player, dialog)
 	elseif self.ai_mode == "next_fight_wait" then -- wait slot between fights
 		self.counter = self.counter - 1
 
+		engine.characters[self.chr].x = engine.characters[self.chr].x * 0.9
+
 		if self.counter <= 0 then
 			self.ai_mode = "next_fight"
+			engine.characters[self.chr].x = 0
 		end
 
 	elseif self.ai_mode == "fight" then -- fight logic

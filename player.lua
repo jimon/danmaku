@@ -18,6 +18,8 @@ end
 function player.update(self, scrn_w, scrn_h, npc, engine, render)
 	local pdx = 0
 	local pdy = 0
+	local mod = 1
+	if love.keyboard.isDown("space") then mod = 0.4 end
 	if love.keyboard.isDown("left") then  pdx = -1 end
 	if love.keyboard.isDown("right") then pdx =  1 end
 	if love.keyboard.isDown("up") then    pdy = -1 end
@@ -26,8 +28,8 @@ function player.update(self, scrn_w, scrn_h, npc, engine, render)
 		pdx = pdx / math.sqrt(2)
 		pdy = pdy / math.sqrt(2)
 	end
-	self.x = self.x + self.vx * pdx
-	self.y = self.y + self.vy * pdy
+	self.x = self.x + self.vx * pdx * mod
+	self.y = self.y + self.vy * pdy * mod
 	local img_x, img_y, img_w, img_h = render.bullets[self.type]:getViewport()
 	self.x = math.min(math.max(self.x, -scrn_w / 2 + img_w / 2), scrn_w / 2 - img_w / 2)
 	self.y = math.min(math.max(self.y, -scrn_h / 2 + img_h / 2), scrn_h / 2 - img_h / 2)

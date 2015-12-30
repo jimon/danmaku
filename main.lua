@@ -16,8 +16,8 @@ function love.load(args)
 	if args[2] == "--edit" then
 		npc:edit_mode(0, -200, engine, player, args[3])
 	else
-		--npc:spawn(0, -500, engine, player)
-		npc:fast_spawn(0, -250, engine, player)
+		npc:spawn(0, -500, engine, player)
+		--npc:fast_spawn(0, -250, engine, player)
 	end
 end
 
