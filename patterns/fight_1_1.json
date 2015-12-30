@@ -1,0 +1,87 @@
+[
+    {
+        "angle": 89,
+        "distance": 32,
+        "end": 310,
+        "fire": {
+            "bullet": 3,
+            "count": 11,
+            "counter": 0,
+            "directed": false,
+            "offset": 0,
+            "rate": 48,
+            "type": "stream",
+            "velocity": 12.800000190734863
+        },
+        "name": "slave_1",
+        "start": 0,
+        "velocity": 0.20000000298023224
+    },
+    {
+        "angle": 62,
+        "distance": 32,
+        "end": 310,
+        "fire": {
+            "bullet": 3,
+            "count": 11,
+            "counter": 26,
+            "directed": false,
+            "offset": 0,
+            "rate": 48,
+            "type": "stream",
+            "velocity": 12.800000190734863
+        },
+        "name": "slave_2",
+        "start": 0,
+        "velocity": 0.20000000298023224
+    },
+    {
+        "angle": 34,
+        "distance": 32,
+        "end": 310,
+        "fire": {
+            "bullet": 3,
+            "count": 11,
+            "counter": 26,
+            "directed": false,
+            "offset": 0,
+            "rate": 48,
+            "type": "stream",
+            "velocity": 12.800000190734863
+        },
+        "name": "slave_3",
+        "start": 0,
+        "velocity": 0.20000000298023224
+    },
+    {
+        "angle": 8,
+        "distance": 32,
+        "end": 310,
+        "fire": {
+            "bullet": 3,
+            "count": 11,
+            "counter": 26,
+            "directed": false,
+            "offset": 0,
+            "rate": 48,
+            "type": "stream",
+            "velocity": 12.800000190734863
+        },
+        "name": "slave_4",
+        "start": 0,
+        "velocity": 0.20000000298023224
+    },
+    {
+        "angle": 0,
+        "distance": 32,
+        "end": -1,
+        "mod": {
+            "amount": -0.14000000059604645,
+            "bullet": 3,
+            "type": "gravity"
+        },
+        "name": "slave_5",
+        "start": 315,
+        "velocity": 0
+    }
+]
