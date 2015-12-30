@@ -80,11 +80,11 @@ function npc.update(self, engine, player, dialog)
 	elseif self.ai_mode == "next_fight" then -- setup next fight
 		self.ai_mode = "fight"
 		if self.fight_lvl == 0 then
-			local slaves, slaves_text = engine:parse_slaves("test2.json")
+			local slaves, slaves_text = engine:parse_slaves("patterns/test2.json")
 			engine:spawn_slaves(slaves, self.chr)
 			self.counter = 3600
 		elseif self.fight_lvl == 1 then
-			local slaves, slaves_text = engine:parse_slaves("test1.json")
+			local slaves, slaves_text = engine:parse_slaves("patterns/test1.json")
 			engine:spawn_slaves(slaves, self.chr)
 			self.counter = 3600
 			self.offset = engine.characters[self.chr].x - math.sin(self.counter * 0.01) * 100

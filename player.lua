@@ -39,7 +39,7 @@ function player.update(self, scrn_w, scrn_h, npc, engine, render)
 	--if love.keyboard.isDown("space") then
 	if npc:is_fighting() then
 		if not self.fire then
-			local slaves, slaves_text = engine:parse_slaves("player2.json")
+			local slaves, slaves_text = engine:parse_slaves("patterns/player2.json")
 			engine:spawn_slaves(slaves, self.chr)
 			self.fire = true
 		end
